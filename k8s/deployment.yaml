@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kub-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kub-test
+  template:
+    metadata:
+      labels:
+        app: kub-test
+    spec:
+      containers:
+        - name: kub-test
+          image: kub_test:latest
+          ports:
+            - containerPort: 5000
