@@ -1,11 +1,12 @@
-name: CI/CD for kub_test
+# .github/workflows/ci-cd.yaml
+name: CI/CD for Flask with Kind
 
 on:
   push:
     branches: [main]
 
 jobs:
-  build-and-deploy:
+  build-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,19 +27,21 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/kub_test:latest
+        tags: altjin09/kub_test:latest
+
+    - name: Create Kind cluster
+      uses: helm/kind-action@v1.8.0
 
     - name: Set up kubectl
       uses: azure/setup-kubectl@v3
       with:
         version: 'latest'
 
-    - name: Configure Kubeconfig
-      run: |
-        echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig.yaml
-        echo "KUBECONFIG=$PWD/kubeconfig.yaml" >> $GITHUB_ENV
+    - name: Load image into Kind cluster
+      run: kind load docker-image altjin09/kub_test:latest
 
     - name: Deploy to Kubernetes
       run: |
         kubectl apply -f k8s/deployment.yaml
         kubectl apply -f k8s/service.yaml
+        kubectl rollout status deployment/kub-test

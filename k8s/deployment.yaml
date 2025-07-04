@@ -13,7 +13,7 @@ spec:
         app: kub-test
     spec:
       containers:
-        - name: kub-test
+        - name: flask-app
           image: kub_test:latest
           ports:
             - containerPort: 5000
