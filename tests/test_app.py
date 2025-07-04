@@ -7,6 +7,7 @@ from app import app
 
 def test_home():
     tester = app.test_client()
-    response = tester.get('/')
+    response = tester.get('/', follow_redirects=True)  # redirect дагана
     assert response.status_code == 200
-    assert b"Hello" in response.data
+    assert "Нууц үг" in response.data.decode("utf-8")
+  # login.html доторх үгсийн нэг байж болно
