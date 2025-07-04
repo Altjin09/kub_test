@@ -1,15 +1,15 @@
-name: CI/CD for Flask with DockerHub & Kind
+name: CI/CD for Flask App
 
 on:
   push:
     branches: [main]
 
 jobs:
-  build-deploy:
-    runs-on: self-hosted
+  build-and-deploy:
+    runs-on: self-hosted  # Та өөрийн Windows self-hosted runner ашиглаж байгаа тул ингэж бичнэ
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v3
 
     - name: Set up Docker Buildx
@@ -21,22 +21,19 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build and push Docker image
+    - name: Build and Push Docker Image to DockerHub
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        tags: altjin09/kub_test:latest  # өөрийн DockerHub хэрэглэгчийн нэрийг ашигласан эсэхээ шалгаарай
-
-    - name: Create Kind cluster
-      uses: helm/kind-action@v1.8.0
+        tags: altjin09/kub_test:latest
 
     - name: Set up kubectl
       uses: azure/setup-kubectl@v3
       with:
         version: 'latest'
 
-    - name: Deploy to Kubernetes
+    - name: Deploy to Docker Desktop Kubernetes (локал кластер)
       run: |
         kubectl apply -f k8s/deployment.yaml
         kubectl apply -f k8s/service.yaml
