@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout source
+    - name: Checkout code
       uses: actions/checkout@v3
 
     - name: Set up Docker Buildx
@@ -28,15 +28,15 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/kub_test:latest
 
-    - name: Setup kubectl
+    - name: Set up kubectl
       uses: azure/setup-kubectl@v3
       with:
         version: 'latest'
 
     - name: Configure Kubeconfig
       run: |
-        echo "${{ secrets.KUBE_CONFIG }}" > kubeconfig.yaml
-        export KUBECONFIG=$PWD/kubeconfig.yaml
+        echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig.yaml
+        echo "KUBECONFIG=$PWD/kubeconfig.yaml" >> $GITHUB_ENV
 
     - name: Deploy to Kubernetes
       run: |
