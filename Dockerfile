@@ -1,17 +1,20 @@
-# 1. Python суурьтай image ашиглана
+# 1. Python суурьтай image
 FROM python:3.12-slim
 
 # 2. Ажлын директори үүсгэх
 WORKDIR /app
 
-# 3. requirements.txt үүсгээгүй тул шууд бүх файлуудыг хуулна
-COPY . /app
+# 3. Requirements-ээ түрүүлж хуулах (кэшлэнэ)
+COPY requirements.txt .
 
-# 4. Flask суулгах
-RUN pip install flask
+# 4. Flask болон бусад хамаарал суулгах
+RUN pip install --no-cache-dir -r requirements.txt
 
-# 5. Порт нээх
+# 5. Кодоо хуулах
+COPY . .
+
+# 6. Порт нээх
 EXPOSE 5000
 
-# 6. App ажиллуулах
-CMD ["python", "app.py"]
+# 7. App ажиллуулах
+CMD ["python3", "app.py"]
