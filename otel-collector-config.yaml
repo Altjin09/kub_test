@@ -1,0 +1,47 @@
+receivers:
+  github:
+    webhook:
+      endpoint: 0.0.0.0:19418
+      path: /events
+      health_path: /health
+      secret: ${GITHUB_WEBHOOK_SECRET}
+      service_name: github-ci-service
+    scrapers:
+      scraper:
+        github_org: Altjin09  # ⬅️ зөв түлхүүр нь repositories биш
+        metrics:
+          vcs.contributor.count:
+            enabled: true
+        auth:
+          authenticator: bearertokenauth/github
+
+processors:
+  resource/github:
+    attributes:
+      - key: service.name
+        value: github-ci-service
+        action: insert
+
+exporters:
+  debug:
+    verbosity: detailed
+  otlp:
+    endpoint: "localhost:4317"
+    tls:
+      insecure: true
+
+extensions:
+  bearertokenauth/github:
+    token: ${GH_PAT}
+
+service:
+  extensions: [bearertokenauth/github]
+  pipelines:
+    traces:
+      receivers: [github]
+      processors: []
+      exporters: [debug]
+    metrics:
+      receivers: [github]
+      processors: [resource/github]
+      exporters: [debug, otlp]

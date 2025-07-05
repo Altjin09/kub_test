@@ -13,8 +13,12 @@ spec:
         app: kub-test
     spec:
       containers:
-      - name: flask-app
-        image: altjin09/kub_test:latest
-        ports:
-        - containerPort: 5000
-        imagePullPolicy: IfNotPresent
+        - name: kub-test
+          image: altjin09/kub_test:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://signoz-otel-collector.platform:4317"
+            - name: OTEL_EXPORTER_OTLP_INSECURE
+              value: "true"
